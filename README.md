@@ -1,7 +1,7 @@
 ![Directories](http://www.bytte.com.co/ftpaccess/Varios/CarlosG/Documentaci%C3%B3n/LogoBytte.png)
 
 # Bytte SDK
-# Documento Integración SDK Nativo IOS Biometria
+# Documento Integración SDK Nativo iOS Biometría
 
 ## CONFIDENCIALIDAD
 
