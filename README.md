@@ -251,7 +251,7 @@ class ViewController: UIViewController,FaceIDDelegate{
         }
     }
     
-    // MARK: - Delegate Identy
+    // MARK: - Delegate
     func doCaptureFaceID(faceResponse: FaceResponseID) {
         if(faceResponse.StatusOperacion){
             self.imgFace.image = faceResponse.FaceObjects.ProcessedImage
