@@ -92,16 +92,16 @@ class ViewController: UIViewController, FingerIDDelegate,FaceIDDelegate {
 Para el correcto funcionamiento del SDK, el método de captura requiere variables que serán proporcionadas por BYTTE S.A.S., así como parámetros que deben ser generados y proporcionados por cuenta propia:
 
 - `url`: la URL del servidor de BYTTE.
-- `key`: llave de cifrado.
-- `camera`: 1 → cámara frontal. 2 → cámara trasera.
-- `timeOut`: tiempo límite de captura.
+- `sessionID`: llave de cifrado.
+- `clientID`: Información proporcionada por BYTTE.
+- `clientKey`: Información proporcionada por BYTTE.
 - `licenseId`: Nombre de la licencia facial y/o dactilar, omitiendo la extensión .lic
 
-### 5. Ejemplo de Implementación
+### 4. Ejemplo de Implementación
 
 Aquí tiene un ejemplo de cómo configurar y utilizar el SDK en su aplicación, incluyendo el evento y el delegado:
 
-#### 5.1 Captura Dactilar
+#### 4.1 Captura Dactilar
 ```swift
 import UIKit
 import BytteLIbrarySDKFingerID
@@ -208,38 +208,73 @@ class ViewController: UIViewController, FingerIDDelegate {
 
 ```
 
-#### 5.2 Captura Facial
+#### 4.2 Captura Facial
 ```swift
 import UIKit
 import BytteLibrarySDKFaceID
 
-class ViewController: UIViewController,FaceIDDelegate{
-
+class ViewController: UIViewController,FaceIDDelegate {
     //imagen
     @IBOutlet weak var imgFace: UIImageView!
-
-   override func viewDidLoad() {
+    
+    override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
     }
     
     //Captura Facial
     @IBAction func btnCapturar(_ sender: UIButton) {
-        FacialCapture()
+        identyFacialCapture()
     }
     
-    // MARK: - Captura Facial
-    func FacialCapture(){
+    // MARK: - Captura Facial Identy
+    func identyFacialCapture(){
         let faceID = FaceID()
         
         faceID.delegate = self
         faceID.setColor = .orange;
-        let requestFace = FaceRequest(url: Endpoints.url, key: "", camera: 1, timeOut: Endpoints.timeOut)
         
-        faceID.IDCaptureFace(licenseId: Endpoints.licFace, viewcontrol: self, request: requestFace)
+        let requetFace = FaceRequest(url: Endpoints.url, sessionID: Endpoints.sessionID, clientID: Endpoints.clientId, clientKey: Endpoints.clientKey)
+        
+        faceID.IDCaptureFace(licenseId: Endpoints.licFace, viewController: self, request: requetFace)
     }
     
-    //Alerta Face
+    // MARK: - Delegate Response
+    func doCaptureFaceID(faceResponse: FaceResponseID) {
+        if(faceResponse.StatusOperacion){
+            //self.imgFace.image = faceResponse.FaceObjects.ProcessedImage
+            self.alertFaceOK(titulo: "CAPTURA EXITOSA", mensaje: faceResponse.PKI)
+        } else {
+            self.alertFace(titulo: "ERROR", mensaje: faceResponse.MensajeOriginal,type: 1)
+        }
+    }
+    
+    //alert
+    func alertFaceOK(titulo:String , mensaje : String){
+        DispatchQueue.main.async {
+            // Crea una instancia de UIAlertController
+            let alerta = UIAlertController(title: titulo, message: mensaje, preferredStyle: .alert)
+            
+            // Agrega un botón a la alerta
+            alerta.addAction(UIAlertAction(title: "Copiar PKI", style: .default, handler: { action in
+                // Copia el texto al portapapeles
+                UIPasteboard.general.string = mensaje
+                
+                // Puedes mostrar un mensaje de confirmación si lo deseas
+                let confirmacionAlerta = UIAlertController(title: "Copia exitosa", message: "El texto se ha copiado al portapapeles.", preferredStyle: .alert)
+                confirmacionAlerta.addAction(UIAlertAction(title: "Aceptar", style: .default, handler: nil))
+                self.present(confirmacionAlerta, animated: true, completion: nil)
+            }))
+            
+            // Agrega un botón de cancelar (opcional)
+            alerta.addAction(UIAlertAction(title: "Cancelar", style: .cancel, handler: nil))
+            
+            // Presenta la alerta en la pantalla
+            self.present(alerta, animated: true, completion: nil)
+        }
+    }
+    
+    //alerta face
     func alertFace(titulo:String , mensaje : String,type : Int){
         DispatchQueue.main.async {
             let alert = UIAlertController(title: titulo, message: mensaje, preferredStyle: .alert)
@@ -247,20 +282,12 @@ class ViewController: UIViewController,FaceIDDelegate{
             alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
                 alert.dismiss(animated: true, completion: nil)
             }))
+            
             self.present(alert, animated: true)
         }
     }
-    
-    // MARK: - Delegate
-    func doCaptureFaceID(faceResponse: FaceResponseID) {
-        if(faceResponse.StatusOperacion){
-            self.imgFace.image = faceResponse.FaceObjects.ProcessedImage
-            self.alertFace(titulo: "CAPTURA EXITOSA", mensaje: faceResponse.MensajeOriginal,type: 0)
-        } else {
-            self.alertFace(titulo: "ERROR", mensaje: faceResponse.MensajeOriginal,type: 1)
-        }
-    }
 }
+
 ```
 
 Siguiendo estos pasos, podrá integrar y utilizar correctamente el SDK de BYTTE para la captura de biometriía en su aplicación iOS.
@@ -281,6 +308,8 @@ Esta sección contiene las siguientes variables:
 Para obtener más información o asistencia técnica, no dude en ponerse en contacto con nuestro equipo comercial o con el director de proyectos.
 
 Estaremos encantados de ayudarle con cualquier pregunta o inquietud que pueda tener.
+
+
 
 
 
